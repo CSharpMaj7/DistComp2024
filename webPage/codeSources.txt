@@ -1,2 +1,3 @@
 https://franzeus.medium.com/record-audio-in-js-and-upload-as-wav-or-mp3-file-to-your-backend-1a2f35dea7e8
 https://github.com/mozdevs/MediaRecorder-examples/blob/gh-pages/filter-and-record-live-audio.html
+https://www.makeuseof.com/tag/python-javascript-communicate-json/

@@ -7,7 +7,18 @@
 <p>Your Voice Aided Recipe Finder!</p>
 <p>Feel Free to use either the Voice Activated interface or to input the food items by hand</p>
 <h3 style="color: #790016;">To use the voice interface, press the button below to begin:</h3>
-<p><button name="myButton" type="button" autofocus=""> Begin Voice Activation </button></p>
+<head>
+  <link rel="stylesheet" href="styles.css" type="text/css">
+  <script src="record-live-audio.js"></script>
+</head>
+<body>
+  <main>
+    <p><button id="record" disabled>Start Food List</button> <button id="stop" disabled>Stop</button></p>
+    <p><audio id="audio" controls></audio></p>
+  </main>
+</body>
+
+<!--<p><button name="myButton" type="button" autofocus=""> Begin Voice Activation </button></p>-->
 <h3 style="color: #790016;">Enter Food Item to use and Appoximate Experiation Date:</h3>
 <p>Food Item : <input spellcheck="" name="foodInput" required="" size="40" type="text" /></p>
 <p>Approx Expiration Date : <input spellcheck="" name="foodInput" required="" size="40" type="text" /></p>
