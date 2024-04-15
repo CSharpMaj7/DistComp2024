@@ -1,21 +1,7 @@
-// This example uses MediaRecorder to record from a live audio stream,
-// and uses the resulting blob as a source for an audio element.
+//Code References 
+//https://github.com/mozdevs/MediaRecorder-examples/blob/gh-pages/filter-and-record-live-audio.html
+//https://stackoverflow.com/questions/12407778/connecting-to-tcp-socket-from-browser-using-javascript
 //
-// The relevant functions in use are:
-//
-// navigator.mediaDevices.getUserMedia -> to get audio stream from microphone
-// MediaRecorder (constructor) -> create MediaRecorder instance for a stream
-// MediaRecorder.ondataavailable -> event to listen to when the recording is ready
-// MediaRecorder.start -> start recording
-// MediaRecorder.stop -> stop recording (this will generate a blob of data)
-// URL.createObjectURL -> to create a URL from a blob, which we can use as audio src
-
-//import {MediaRecorder, register} from 'extendable-media-recorder';
-//import {connect} from 'extendable-media-recorder-wav-encoder';
-
-//let mediaRecorder = null;
-//let audioBlobs = [];
-//let capturedStream = null;
 
 var recordButton, stopButton, recorder;
 var xhr=new XMLHttpRequest();
@@ -88,14 +74,42 @@ async function uploadBlob(audioBlob, fileType) {
   formData.append('audio_data', audioBlob, 'file');
   formData.append('type', fileType || 'ogg');
 
-  // Your server endpoint to upload audio:
-  const apiUrl = "http://localhost:8000";
+navigator.tcpPermission.requestPermission({remoteAddress:"ec2-34-230-82-177.compute-1.amazonaws.com", remotePort:8000}).then(
+  () => {
+    // Permission was granted
+    // Create a new TCP client socket and connect to remote host
+    var mySocket = new TCPSocket("ec2-34-230-82-177.compute-1.amazonaws.com", 8000);
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    cache: 'no-cache',
-    body: formData
-  });
+    // Send data to server
+    mySocket.writeable.write("Hello World").then(
+        () => {
+
+            // Data sent sucessfully, wait for response
+            console.log("Data has been sent to server");
+            mySocket.readable.getReader().read().then(
+                ({ value, done }) => {
+                    if (!done) {
+                        // Response received, log it:
+                        console.log("Data received from server:" + value);
+                    }
+
+                    // Close the TCP connection
+                    mySocket.close();
+                }
+            );
+        },
+        e => console.error("Sending error: ", e)
+    );
+  }
+
+  // Your server endpoint to upload audio:
+  //const apiUrl = "http://localhost:8000";
+
+  //const response = await fetch(apiUrl, {
+  //  method: 'POST',
+  //  cache: 'no-cache',
+  //  body: formData
+  //:wait});
 
   return response.json();
 }
