@@ -2,14 +2,15 @@
 //https://github.com/mozdevs/MediaRecorder-examples/blob/gh-pages/filter-and-record-live-audio.html
 //https://stackoverflow.com/questions/12407778/connecting-to-tcp-socket-from-browser-using-javascript
 //https://franzeus.medium.com/record-audio-in-js-and-upload-as-wav-or-mp3-file-to-your-backend-1a2f35dea7e8
-//import {MediaRecorder, register} from 'extendable-media-recorder';
-//import {connect} from 'extendable-media-recorder-wav-encoder';
+//https://stackoverflow.com/questions/57507737/send-microphone-audio-recorder-from-browser-to-google-speech-to-text-javascrip
 
-let mediaRecorder = null;
-let audioBlobs = [];
-let capturedStream = null;
+//import Recorder from 'recorder-js';
+//const Recorder = require('recorder-js');
+let rec = null;
+let audioStream = null;
+let constraints = { audio: true, video:false }
 var recordButton, stopButton, recorder;
-var xhr=new XMLHttpRequest();
+
 
 // Register the extendable-media-recorder-wav-encoder
 //async connect() {
@@ -24,17 +25,21 @@ window.onload = function () {
   stopButton = document.getElementById('stop');
 
   // get audio stream from user's mic
-  navigator.mediaDevices.getUserMedia({
-    audio: true
-  })
-  .then(function (stream) {
+  navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
     recordButton.disabled = false;
     recordButton.addEventListener('click', startRecording);
     stopButton.addEventListener('click', stopRecording);
+    
+    const audioContext = new window.AudioContext();
+    audioStream = stream;
+    const input = audioContext.createMediaStreamSource(stream);
+    //rec = new Recorder(input, { numChannels:1 })
     recorder = new MediaRecorder(stream);
 
     // listen to dataavailable, which gets triggered whenever we have
     // an audio blob available
+    
+    //rec.addEventListener('dataavailable', onRecordingReady);
     recorder.addEventListener('dataavailable', onRecordingReady);
   });
 };
@@ -42,11 +47,8 @@ window.onload = function () {
 function startRecording() {
   recordButton.disabled = true;
   stopButton.disabled = false;
-  //audioBlobs = [];
-  //recorder.addEventListener('dataavailable', event => {
-  //   audioBlobs.push(event.data);
-  //});
-
+  
+  //rec.record()
   recorder.start();
 }
 
@@ -54,14 +56,10 @@ function stopRecording() {
   recordButton.disabled = false;
   stopButton.disabled = true;
 
-    //recorder.addEventListener('stop', () => {
-    //  const mimeType = recorder.mimeType;
-    //  const audioBlob = new Blob(audioBlobs, { type: mimeType });
-    //  const blobUrl  = URL.createObjectURL(audioBlob);
-    //  //resolve(audioBlob);
-    //});
-
   // Stopping the recorder will eventually trigger the `dataavailable` event and we can complete the recording process
+  //rec.stop()
+  //audioStream.getAudioTracks()[0].stop();
+  //rec.exportWAV(uploadSoundData);
   recorder.stop();
 }
 
@@ -82,12 +80,22 @@ function onRecordingReady(e) {
  * @return {Promise<object>)
  */
 async function uploadBlob(audioBlob, fileType) {
+  let filename = new Date().toISOString();
+  let xhr = new XMLHttpRequest();
+  const apiUrl = "http://localhost:8000/upload_sound";
+  xhr.onload = function(e) {
+        if(this.readyState === 4) {
+            document.getElementById("output").innerHTML = `<br><br><strong>Result: </strong>${e.target.responseText}`
+        }
+  };
   const formData = new FormData();
-  formData.append('audio_data', audioBlob, 'file');
-  formData.append('type', fileType || 'ogg');
-
-	
-  // Your server endpoint to upload audio:
+  formData.append('audio_data', audioBlob, filename);
+  
+  xhr.open("POST", apiUrl, true);
+  xhr.send(formData); 
+  /*
+  //formData.append('type', fileType || 'ogg');
+  //Your server endpoint to upload audio:
   const apiUrl = "http://localhost:8000";
 
   const response = await fetch(apiUrl, {
@@ -97,4 +105,20 @@ async function uploadBlob(audioBlob, fileType) {
     });
 
   return response;
+  */
+}
+
+function uploadSoundData(blob) {
+    let filename = new Date().toISOString();
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function(e) {
+        if(this.readyState === 4) {
+            document.getElementById("output").innerHTML = `<br><br><strong>Result: </strong>${e.target.responseText}`
+        }
+    };
+    let formData = new FormData();
+     const apiUrl = "http://localhost:8000/upload_sound";
+    formData.append("audio_data", blob, filename);
+    xhr.open("POST", apiUrl, true);
+    xhr.send(formData);
 }
