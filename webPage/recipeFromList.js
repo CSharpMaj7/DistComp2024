@@ -23,11 +23,29 @@ async function sendFoodList() {
 	const data = recipeJson.recipe.meals[0]
 	
 	console.log(recipeJson.recipe)
+	
+    const ingredientsList = [];
+
+    //list Ingredents 
+    for (let i = 1; i <= 20; i++) {
+        const ingredient = data[`strIngredient${i}`];
+        const measure = data[`strMeasure${i}`];
+
+        if (ingredient && ingredient.trim() !== '') {
+            ingredientsList.push(`${ingredient} - ${measure}`);
+        } else {
+            break; // Stop loop if no more ingredients
+        }
+    }
     
 	const mealDetailsContainer = document.getElementById('recipeResponse');
     mealDetailsContainer.innerHTML = `
                 <h3>${data.strMeal}</h3>
                 <img src="${data.strMealThumb}" alt="${data.strMeal}" style="max-width: 300px;">
+                <h3>Ingredients:</h3>
+                <ul>
+                    ${ingredientsList.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                </ul>
                 <p><strong>Category:</strong> ${data.strCategory}</p>
                 <p><strong>Area:</strong> ${data.strArea}</p>
                 <p><strong>Instructions:</strong> ${data.strInstructions}</p>`;
