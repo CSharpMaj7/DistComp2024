@@ -82,7 +82,7 @@ function onRecordingReady(e) {
 async function uploadBlob(audioBlob, fileType) {
   let filename = new Date().toISOString();
   let xhr = new XMLHttpRequest();
-  const apiUrl = "http://localhost:8000/upload_sound";
+  const apiUrl = "http://localhost/upload_sound";
   xhr.onload = function(e) {
         if(this.readyState === 4) {
             document.getElementById("output").innerHTML = `<br><br><strong>Result: </strong>${e.target.responseText}`
@@ -117,7 +117,7 @@ function uploadSoundData(blob) {
         }
     };
     let formData = new FormData();
-     const apiUrl = "http://localhost:8000/upload_sound";
+     const apiUrl = "http://localhost/upload_sound";
     formData.append("audio_data", blob, filename);
     xhr.open("POST", apiUrl, true);
     xhr.send(formData);
