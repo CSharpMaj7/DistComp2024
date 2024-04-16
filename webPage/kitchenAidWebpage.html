@@ -17,11 +17,15 @@
   </main>
 </body>
 
-<!--<p><button name="myButton" type="button" autofocus=""> Begin Voice Activation </button></p>-->
-<h3 style="color: #790016;">Enter Food Item to use and Appoximate Experiation Date:</h3>
-<p>Food Item : <input spellcheck="" name="foodInput" required="" size="40" type="text" /></p>
-<p>Approx Expiration Date : <input spellcheck="" name="foodInput" required="" size="40" type="text" /></p>
-<p><button name="myButton" type="button" autofocus=""> Confirm </button></p>
-<h3 style="color: #790016;">Enter Food Item to avoid:</h3>
-<p>Food Item : <input spellcheck="" name="foodInput" required="" size="40" type="text" /></p>
-<p><button name="myButton" type="button" autofocus=""> Confirm </button></p>
+<body>
+    <h3 style="color: #790016;">Enter Your List of Food Items:</h3>
+    <form id="foodForm">
+        <textarea id="foodList" rows="10" cols="50"></textarea><br><br>
+        <button type="button" onclick="sendFoodList()">Submit</button>
+    </form>
+
+    <script src="recpieFromList.js"></script>
+    
+    <div id="recipeResponse"></div>
+</body>
+
