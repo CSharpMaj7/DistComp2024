@@ -163,8 +163,8 @@ httpServer.listen(httpPort, () => {
 });
 
 const httpsOptions = {
-    key: fs.readFileSync('/etc/ssl/private/apache.key'),
-    cert: fs.readFileSync('/etc/ssl/certs/apache.crt')
+    key: fs.readFileSync('/etc/ssl/private/aws.key'),
+    cert: fs.readFileSync('/etc/ssl/certs/aws.crt')
 };
 const httpsServer = https.createServer(httpsOptions, app);
 
