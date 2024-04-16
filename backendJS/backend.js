@@ -104,27 +104,47 @@ app.post('/upload_sound', upload.any(), async (req, res) => {
 //processes post request for the list of items
 app.post('/recipe_from_list', async (req, res) => {
     const foodList = req.body.items;
-    console.log('Received list of items:', foodList);
-  
-    const mealDetailsPromises = foodList.map(async (item) => {
-        // Fetch meal details for each item from TheMealDB API
-        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(item)}`);
-        const data = await response.json();
+    var json;
+    //var response;
+    //var response2;
+    console.log('Received list of items:', foodList.join(","));
+    console.log(`https://www.themealdb.com/api/json/v2/9973533/filter.php?i=` + foodList.join(","));
+    //the mealdb api key is 9973533
+    
+    try{
+        const response = await fetch(`https://www.themealdb.com/api/json/v2/9973533/filter.php?i=` + foodList.join(",")).then(
+            function(response) {
+              if (response.status !== 200) {
+                console.log('Problem in fetching');
+                return null;
+              }
+              return response.text().then(function(data) {              
+                json = JSON.parse(data)
+                return json;          
+              });               
+        })   
+        console.log(response.meals[0].idMeal);  
 
-        // Extract the first meal
-        const meal = data.meals ? data.meals[0] : null;
+       console.log(`https://www.themealdb.com/api/json/v2/9973533/lookup.php?i=` + response.meals[0].idMeal);     
+        const response2 = await fetch(`https://www.themealdb.com/api/json/v2/9973533/lookup.php?i=` + response.meals[0].idMeal).then(
+            function(response2) {
+              if (response2.status !== 200) {
+                console.log('Problem in fetching');
+                return null;
+              }
+              return response2.text().then(function(data) {
+                json = JSON.parse(data)
+                return json
+              });
+            })   
+        console.log(response2.meals[0].strMeal);    
 
-        return meal;
-    });
-
-    // Wait for all meal detail requests to complete
-    const mealDetails = await Promise.all(mealDetailsPromises);
-
-    // Filter out any meals that were not found (null values)
-    const validMeals = mealDetails.filter(meal => meal !== null);
-
-    // Send the list of valid meals back to the client
-    res.json({ meals: validMeals });
+        res.json({ recipe : response2 });
+    
+    }catch(e){
+        console.error(e);
+        console.error('Problem in API Cals');
+    } 
 
 });
 

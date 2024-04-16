@@ -1,5 +1,5 @@
 //Code References
-// https://stackoverflow.com/questions/68102339/how-to-call-api-from-the-mealdb
+5// https://stackoverflow.com/questions/68102339/how-to-call-api-from-the-mealdb
 //This code will take the list of items from the html webpage and send the list of food items 
 //to the server. 
 
@@ -19,20 +19,18 @@ async function sendFoodList() {
 	throw new Error('Network response was not ok');
 	}
 
-	const recipeOptions = await response.json();
+	const recipeJson = await response.json();
+	const data = recipeJson.recipe.meals[0]
+	
+	console.log(recipeJson.recipe)
     
-	const mealDetailsContainer = document.getElementById('mealDetails');
-          mealDetailsContainer.innerHTML = ''; 
-
-        data.meals.forEach(meal => {
-            const mealElement = document.createElement('div');
-            mealElement.innerHTML = `
-                <h3>${meal.strMeal}</h3>
-                <img src="${meal.strMealThumb}" alt="${meal.strMeal}" style="max-width: 300px;">
-                <p><strong>Category:</strong> ${meal.strCategory}</p>
-                <p><strong>Area:</strong> ${meal.strArea}</p>
-                <p><strong>Instructions:</strong> ${meal.strInstructions}</p>
-            `;
-            mealDetailsContainer.appendChild(mealElement);    
-         });
+	const mealDetailsContainer = document.getElementById('recipeResponse');
+    mealDetailsContainer.innerHTML = `
+                <h3>${data.strMeal}</h3>
+                <img src="${data.strMealThumb}" alt="${data.strMeal}" style="max-width: 300px;">
+                <p><strong>Category:</strong> ${data.strCategory}</p>
+                <p><strong>Area:</strong> ${data.strArea}</p>
+                <p><strong>Instructions:</strong> ${data.strInstructions}</p>`;
+                
+                
 }
